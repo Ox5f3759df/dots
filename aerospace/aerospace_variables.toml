@@ -1,0 +1,156 @@
+###############################################################
+# Nested Variables (used within here)
+cmd_start = "exec-and-forget osascript -e '\ntell application \"iTerm\"\n\tset newWindow to (create window with default profile)\n\ttell current session of newWindow\n\t\twrite text \""
+cmd_end = "\"\n\tend tell\n\tset visible of newWindow to false\nend tell'"
+cmd_close = "exec-and-forget osascript -e 'tell application \"iTerm\" to quit'"
+###############################################################
+
+# cmd_quit_all = "exec-and-forget osascript -e 'tell application \"System Events\" to set quitApps to name of every process whose visible is true' -e 'repeat with appName in quitApps' -e 'try' -e 'quit application appName' -e 'end try' -e 'end repeat'"
+
+start_at_login = true
+
+# Green
+# start_borders = "exec-and-forget borders active_color=0xff00ff7f inactive_color=0xff232323 width=7.0 style=square hidpi=off"
+# start_borders = "exec-and-forget borders active_color=0xff00ff7f inactive_color=0xff232323 width=12.0 style=square hidpi=off"
+start_borders = "exec-and-forget borders active_color=0xffffffff inactive_color=0xff232323 width=5.0 style=square hidpi=on"
+
+restart_sketchybar = "exec-and-forget killall sketchybar; exec-and-forget sketchybar"
+# open_application = "exec-and-forget open -a 'Aerospace'; open -a"
+open_application = "exec-and-forget open -a"
+open_vscode = "exec-and-forget open -a 'Visual Studio Code'"
+restart_vscode = "exec-and-forget 'tell application \"Visual Studio Code\" to quit'; open -a 'Visual Studio Code'"
+close_vscode = "exec-and-forget 'tell application \"Visual Studio Code\" to quit'"
+open_vscode_insiders = "exec-and-forget open -a 'Visual Studio Code - Insiders'"
+open_chatgpt = "exec-and-forget open -a 'ChatGPT'"
+open_firefox = "exec-and-forget open -a 'Firefox'"
+open_wezterm = "exec-and-forget open -a 'Wezterm'"
+restart_wezterm = "exec-and-forget 'tell application \"Wezterm\" to quit'; open -a 'Wezterm'"
+close_wezterm = "exec-and-forget 'tell application \"Wezterm\" to quit'"
+open_slack = "exec-and-forget open -a 'Slack'"
+open_chrome = "exec-and-forget open -a 'Google Chrome'"
+open_kitty = "exec-and-forget open -a 'kitty'"
+open_iterm = "exec-and-forget open -a 'iTerm'"
+open_reminders = "exec-and-forget open -a 'Reminders'"
+open_android_studios = "exec-and-forget open -a 'Android Studio'"
+open_intellij = "exec-and-forget open -a 'IntelliJ IDEA'"
+open_pycharm = "exec-and-forget open -a 'PyCharm'"
+open_postman = "exec-and-forget open -a 'Postman'"
+open_rider = "exec-and-forget open -a 'Rider'"
+open_dbeaver = "exec-and-forget open -a 'DBeaver'"
+open_clion = "exec-and-forget open -a 'CLion'"
+open_rust_rover = "exec-and-forget open -a 'RustRover'"
+open_datagrip = "exec-and-forget open -a 'DataGrip'"
+open_claude = "exec-and-forget open -a 'Claude'"
+open_zen = "exec-and-forget open -a 'Zen'"
+restart_zen = "exec-and-forget 'tell application \"Zen\" to quit'; open -a 'Zen'"
+close_zen = "exec-and-forget 'tell application \"Zen\" to quit'"
+open_zed = "exec-and-forget open -a 'Zed'"
+open_iina = "exec-and-forget open -a 'IINA'"
+open_xcode = "exec-and-forget open -a 'Xcode'"
+open_outlook = "exec-and-forget open -a 'Microsoft Outlook'"
+open_todo = "exec-and-forget open -a 'Microsoft To Do'"
+open_ghostty = "exec-and-forget open -a 'Ghostty'"
+open_markwhen = "exec-and-forget open -a 'Meridiem'"
+open_hazeover = "exec-and-forget open -a 'HazeOver'"
+open_obsidian = "exec-and-forget open -a 'Obsidian'"
+open_preview = "exec-and-forget open -a 'Preview'"
+open_vscodium = "exec-and-forget open -a 'VSCodium'"
+open_neovide = "exec-and-forget open -a 'Neovide'"
+restart_obsidian = "exec-and-forget 'tell application \"Obsidian\" to quit'; open -a 'Obsidian'"
+close_obsidian = "exec-and-forget 'tell application \"Obsidian\" to quit'"
+open_teams= "exec-and-forget open -a 'Microsoft Teams'"
+open_perplexity = "exec-and-forget open -a 'Perplexity'"
+open_clock = "exec-and-forget open -a 'Clock'"
+
+# Aerospace Specific
+aero_cascade_all = "exec-and-forget open -g \"rectangle-pro://execute-action?name=cascade-all\""
+aero_maximize = "exec-and-forget open -g \"rectangle-pro://execute-action?name=maximize\""
+aero_center = "exec-and-forget open -g \"rectangle-pro://execute-action?name=center\""
+aero_left_half = "exec-and-forget open -g \"rectangle-pro://execute-action?name=left-half\""
+aero_middle_center_ninth = "exec-and-forget open -g \"rectangle-pro://execute-action?name=middle-center-ninth\""
+aero_bottom_right_ninth = "exec-and-forget open -g \"rectangle-pro://execute-action?name=bottom-right-ninth\""
+# Toggle pin and let sketchybar know
+aero_pin = "exec-and-forget open -g \"rectangle-pro://execute-action?name=pin\""
+aero_reflow_pin = "exec-and-forget open -g \"rectangle-pro://execute-action?name=reflow-pin\""
+trigger_sketchybar_pinned_app = "exec-and-forget sketchybar --trigger rectangle-pinned"
+
+# sleep 2
+and_sleep1 = "&& sleep 1;"
+sleep_1 = "exec-and-forget sleep 1"
+sleep_2 = "exec-and-forget sleep 2"
+sleep_3 = "exec-and-forget sleep 3"
+
+close_hazeover = "exec-and-forget killall HazeOver"
+close_aerospace = "exec-and-forget killall AeroSpace"
+reset_ui = "exec-and-forget /bin/zsh -c 'j osx/ui restart'"
+close_all_windows = "${cmd_start}aero_close${cmd_end}"
+# quit_aerospace = "${cmd_start}pkill AeroSpace${cmd_end}"
+restart_contexts = "${cmd_start}pkill Contexts; sleep 2; open -a 'Contexts'${cmd_end}"
+
+W1="A"
+W2="B"
+W3="C"
+W4="D"
+W5="E"
+W6="F"
+W7="G"
+W8="H"
+W9="I"
+TMP_W="Tmp"
+FOCUS_W="C"
+FULLSCREEN_MODE="fullscreen-gaps"
+
+path_randfur_projects = "~/Development/Projects/current/dev/randfur/randfur_projects"
+path_chrisi_wiki = "~/Development/Projects/current/chrisi.wiki"
+path_playground_qanda = "~/Development/Projects/playground/Qanda"
+path_playground_qanda_shortcuts = "~/Development/Projects/playground/Qanda/Shortcuts"
+path_archie_develop = "~/Development/Projects/current/mcri/archie/archie-develop"
+path_panelapp_develop = "~/Development/Projects/current/mcri/panelapp/panelapp-develop"
+path_aerospace_dir="~/.config/aerospace"
+
+
+reload_aerospace = "exec-and-forget killall AeroSpace &> /dev/null; open -a Aerospace;"
+
+#################################
+# Sketchybar: Triggers
+#################################
+# Fullscreen trigger
+trigger_change_fullscreen = "exec-and-forget sketchybar --trigger aerospace_fullscreen_mode_change"
+
+# Workspace change
+trigger_change_workspace = "exec-and-forget sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE="
+
+# Mode Change
+mode_change_main = "exec-and-forget aerospace mode main; sketchybar --trigger aerospace_mode_change MODE=main"
+mode_change_application = "exec-and-forget aerospace mode application; sketchybar --trigger aerospace_mode_change MODE=application"
+mode_change_balance_layout = "exec-and-forget aerospace mode balance_layout; sketchybar --trigger aerospace_mode_change MODE=balance_layout"
+mode_change_swapfocus = "exec-and-forget aerospace mode swapfocus; sketchybar --trigger aerospace_mode_change MODE=swapfocus"
+mode_change_swapmode = "exec-and-forget aerospace mode swapmode; sketchybar --trigger aerospace_mode_change MODE=swapmode"
+mode_change_aerospace = "exec-and-forget aerospace mode aerospace; sketchybar --trigger aerospace_mode_change MODE=aerospace"
+mode_change_tiles = "exec-and-forget aerospace mode tiles; sketchybar --trigger aerospace_mode_change MODE=tiles"
+mode_change_v_accordion = "exec-and-forget aerospace mode v_accordion; sketchybar --trigger aerospace_mode_change MODE=v_accordion"
+mode_change_move = "exec-and-forget aerospace mode move; sketchybar --trigger aerospace_mode_change MODE=move"
+mode_change_float = "exec-and-forget aerospace mode float; sketchybar --trigger aerospace_mode_change MODE=float"
+mode_change_layout = "exec-and-forget aerospace mode layout; sketchybar --trigger aerospace_mode_change MODE=layout"
+mode_change_fullscreen = "exec-and-forget aerospace mode fullscreen; sketchybar --trigger aerospace_mode_change MODE=fullscreen"
+
+#################################
+# Aerospace: Helpers
+#################################
+workspace_layout_floating = "exec-and-forget ~/.config/aerospace/scripts/workspace_layout.py floating"
+workspace_layout_tiling = "exec-and-forget ~/.config/aerospace/scripts/workspace_layout.py tiling"
+workspace_layout_v_accordion = "exec-and-forget ~/.config/aerospace/scripts/workspace_layout.py v_accordion"
+workspace_layout_h_tiles = "exec-and-forget ~/.config/aerospace/scripts/workspace_layout.py h_tiles"
+
+#################################
+# Aerospace: Layouts
+#################################
+group_apps_in_workspaces = "exec-and-forget ~/.config/aerospace/scripts/group_apps_in_workspaces.py"
+move_apps_to_space = "exec-and-forget ~/.config/aerospace/scripts/move_apps_to_space.py"
+move_all_apps_to_space = "exec-and-forget ~/.config/aerospace/scripts/move_all_apps_to_space.py"
+move_to_space = "exec-and-forget ~/.config/aerospace/scripts/move_to_space.py"
+open_app = "exec-and-forget ~/.config/aerospace/scripts/open_app_cmd.py"
+app_layout = "exec-and-forget ~/.config/aerospace/scripts/app_layout.py"
+multilayout = "exec-and-forget ~/.config/aerospace/scripts/multilayout.py"
+balance_layout = "exec-and-forget ~/.config/aerospace/scripts/balance_layout.py"
+move = "exec-and-forget ~/.config/aerospace/scripts/mover.py"

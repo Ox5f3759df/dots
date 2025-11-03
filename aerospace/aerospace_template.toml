@@ -1,0 +1,269 @@
+# Start AeroSpace at login
+start-at-login = "${start_at_login}"
+
+# Sketchybar
+exec-on-workspace-change = [
+    '/bin/bash',
+    '-c',
+    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE PREV_WORKSPACE=$AEROSPACE_PREV_WORKSPACE && ~/.config/sketchybar/plugins/update_workspace_icons.sh',
+]
+# after-startup-command = ["${start_borders}", "${restart_sketchybar}"]
+# after-startup-command = ["${restart_sketchybar}"]
+after-startup-command = [
+    "${start_borders}",
+    "${restart_sketchybar}",
+    # "${move_all_apps_to_space} ${W2}",
+    "${group_apps_in_workspaces}",
+    "workspace ${W2}",
+]
+
+on-focus-changed = [
+    'exec-and-forget sketchybar --trigger aerospace_window_change && ~/.config/sketchybar/plugins/update_workspace_icons.sh',
+]
+
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+
+# enable-normalization-flatten-containers = false
+# enable-normalization-opposite-orientation-for-nested-containers = false
+
+accordion-padding = 0
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+non-empty-workspaces-root-containers-layout-on-startup = 'smart'
+
+# Gaps
+[gaps]
+# inner.horizontal = 0
+inner.horizontal = 0
+inner.vertical = 0
+# outer.top = [{ monitor.main = 10 }, 10]
+outer.top = [{ monitor."Built-in Retina Display" = 10 }, 50]
+# outer.right = 5
+# outer.left = 5
+outer.right = 10
+outer.left = 10
+# outer.bottom = 35
+outer.bottom = 10
+
+[mode.main.binding]
+alt-1 = ["${open_firefox}"]
+# alt-2 = ["${open_kitty}"]
+alt-2 = ["${open_wezterm}"]
+alt-shift-2 = ["${open_iterm}"]
+# alt-3 = ["${open_kitty}"]
+alt-3 = ["${open_wezterm}"]
+alt-shift-3 = ["${open_vscode}"]
+# alt-shift-3 = ["${open_neovide}"]
+alt-4 = ["${open_intellij}"]
+alt-5 = ["${open_chrome}"]
+# Other applications
+alt-8 = ["${open_chatgpt}"]
+alt-9 = ["${open_obsidian}"]
+alt-0 = ["${open_zen}"]
+
+# Workspace
+# alt-semicolon = ["workspace --wrap-around prev", 'fullscreen on']
+# alt-quote = ["workspace --wrap-around next", 'fullscreen on']
+alt-semicolon = ["workspace --wrap-around prev"]
+alt-quote = ["workspace --wrap-around next"]
+
+alt-shift-semicolon = ["move-node-to-workspace --wrap-around prev", "workspace --wrap-around prev"]
+alt-shift-quote = ["move-node-to-workspace --wrap-around next", "workspace --wrap-around next"]
+# ctrl-semicolon = ["move-node-to-workspace --wrap-around prev", "workspace --wrap-around prev"]
+# ctrl-quote = ["move-node-to-workspace --wrap-around next", "workspace --wrap-around next"]
+
+# Monitor
+# alt-leftSquareBracket = ["focus-monitor --wrap-around prev"]
+alt-shift-leftSquareBracket = ["move-node-to-monitor --wrap-around prev", "focus-monitor --wrap-around prev"]
+# alt-rightSquareBracket = ["focus-monitor --wrap-around next"]
+alt-shift-rightSquareBracket = ["move-node-to-monitor --wrap-around next", "focus-monitor --wrap-around next"]
+
+# Focus
+alt-h = ["focus left"]
+alt-j = ["focus down"]
+alt-k = ["focus up"]
+alt-l = ["focus right"]
+
+# ctrl-h = ["exec-and-forget aerospace join-with left || aerospace move left"]
+# ctrl-k = ["move up"]
+# ctrl-j = ["move down"]
+# ctrl-l = ["exec-and-forget aerospace join-with right || aerospace move right"]
+
+
+ctrl-shift-h = ["resize width -150"]
+ctrl-shift-j = ["resize height +150"]
+ctrl-shift-k = ["resize height -150"]
+ctrl-shift-l = ["resize width +150"]
+
+alt-shift-h = ["layout tiling", "exec-and-forget aerospace join-with left || aerospace move left"]
+alt-shift-k = ["layout tiling", "join-with up", "layout v_accordion"]
+alt-shift-j = ["layout tiling", "join-with down", "layout v_accordion"]
+alt-shift-l = ["layout tiling", "exec-and-forget aerospace join-with right || aerospace move right"]
+
+# Resize
+alt-enter = ["fullscreen", "${trigger_change_fullscreen}"]
+alt-shift-enter = ["fullscreen --no-outer-gaps", "${trigger_change_fullscreen}"]
+ctrl-minus = "resize width -150"
+ctrl-equal = "resize width +150"
+alt-shift-minus = "resize height -150"
+alt-shift-equal = "resize height +150"
+ctrl-alt-minus = "resize height -150"
+ctrl-alt-equal = "resize height +150"
+
+# Modes
+# alt-s = ["${mode_change_swapfocus}"]
+alt-x = ["${mode_change_move}"]
+# alt-z = ["${mode_change_balance_layout}"]
+alt-shift-x = ["${workspace_layout_v_accordion}"]
+
+# Modes
+alt-slash = "${mode_change_aerospace}"
+
+###############################################################################
+# Aerospace mode
+###############################################################################
+[mode.aerospace.binding]
+# This will make workspaces appear in sketchybar
+1 = ["${open_app} firefox:v_accordion", '${mode_change_main}']
+2 = ["${open_app} wezterm:v_accordion", '${mode_change_main}']
+shift-2 = ["${open_app} kitty:v_accordion", '${mode_change_main}']
+3 = ["${open_app} vscode:v_accordion", '${mode_change_main}']
+shift-3 = ["${open_app} vscodium:v_accordion", '${mode_change_main}']
+4 = ["${open_app} intellij:v_accordion", '${mode_change_main}']
+5 = ["${open_app} chrome:v_accordion", '${mode_change_main}']
+# Other applications
+8 = ["${open_app} chatgpt:v_accordion", '${mode_change_main}']
+9 = ["${open_app} obsidian:v_accordion", '${mode_change_main}']
+0 = ["${open_app} zen:v_accordion", '${mode_change_main}']
+
+# Applications
+
+c = ["${open_vscodium}", "${mode_change_main}"]
+d = ["${open_datagrip}", "${mode_change_main}"]
+shift-d = ["${open_dbeaver}", "${mode_change_main}"]
+h = ["${open_hazeover}",  '${mode_change_main}']
+shift-h = ["${close_hazeover}",  '${mode_change_main}']
+g = ["${open_chatgpt}", "${mode_change_main}"]
+shift-g = ["${open_perplexity}", "${mode_change_main}"]
+i = ["${open_intellij}", "${mode_change_main}"]
+m = ["${open_iina}", "${mode_change_main}"]
+o = ["${open_outlook}",  '${mode_change_main}']
+shift-p = ["${open_postman}",  '${mode_change_main}']
+p = ["${open_preview}",  '${mode_change_main}']
+s = ["${open_slack}",  '${mode_change_main}']
+t = ["${open_iterm}",  '${mode_change_main}']
+v = ["${open_neovide}", '${mode_change_main}']
+
+# Helpers
+# Close all windows
+w = [
+    "workspace ${W1}", 'close-all-windows-but-current', 'close --quit-if-last-window',
+    "workspace ${W2}", 'close-all-windows-but-current', 'close --quit-if-last-window',
+    # "workspace ${W3}", 'close-all-windows-but-current', 'close --quit-if-last-window',
+    # "workspace ${W4}", 'close-all-windows-but-current', 'close --quit-if-last-window',
+    # "workspace ${W5}", 'close-all-windows-but-current', 'close --quit-if-last-window',
+    "workspace ${W1}",
+    "${mode_change_main}"
+]
+r = ['flatten-workspace-tree', '${mode_change_main}']
+q = """${reload_aerospace}"""
+esc = "${mode_change_main}"
+
+
+[mode.balance_layout.binding]
+# h = ["${move} left", "${mode_change_main}"]
+# j = ["${move} down", "${mode_change_main}"]
+# k = ["${move} up", "${mode_change_main}"]
+# l = ["${move} right", "${mode_change_main}"]
+
+esc = "${mode_change_main}"
+
+[mode.swapfocus.binding]
+s = ["${mode_change_swapmode}"]
+shift-h = ["swap left --swap-focus", "${mode_change_main}"]
+shift-k = ["swap up --swap-focus", "${mode_change_main}"]
+shift-j = ["swap down --swap-focus", "${mode_change_main}"]
+shift-l = ["swap right --swap-focus","${mode_change_main}"]
+h = ["swap left", "${mode_change_main}"]
+k = ["swap up", "${mode_change_main}"]
+j = ["swap down", "${mode_change_main}"]
+l = ["swap right","${mode_change_main}"]
+esc = "${mode_change_main}"
+
+[mode.swapmode.binding]
+h = ["focus left"]
+k = ["focus up"]
+j = ["focus down"]
+l = ["focus right"]
+shift-h = ["swap left"]
+shift-k = ["swap up"]
+shift-j = ["swap down"]
+shift-l = ["swap right"]
+esc = "${mode_change_main}"
+
+[mode.move.binding]
+1 = ["workspace ${W1}", '${mode_change_main}']
+2 = ["workspace ${W2}", "${mode_change_main}"]
+3 = ["workspace ${W3}", "${mode_change_main}"]
+# 4 = ["workspace ${W4}", "${mode_change_main}"]
+# 5 = ["workspace ${W5}", "${mode_change_main}"]
+# 6 = ["workspace ${W6}", "${mode_change_main}"]
+# 7 = ["workspace ${W7}", "${mode_change_main}"]
+# 8 = ["workspace ${W8}", "${mode_change_main}"]
+# 9 = ["workspace ${W9}", "${mode_change_main}"]
+
+# Accordion Single App
+# slash = ["${workspace_layout_h_tiles}", "${mode_change_main}"]
+slash = ["layout tiling", "join-with left", "join-with up", "${mode_change_main}"]
+# Accordion All apps
+x = ["${workspace_layout_v_accordion}", "${mode_change_main}"]
+# Tile All apps
+# c = ["${workspace_layout_h_tiles}", "${mode_change_main}"]
+# Floating
+f = ["${workspace_layout_floating}", "${mode_change_main}"]
+
+# layouting v_according
+h = ["${balance_layout} right w+350", "${mode_change_main}"]
+j = ["exec-and-forget aerospace join-with up || aerospace join-with down; aerospace layout v_accordion", "${mode_change_main}"]
+k = ["exec-and-forget aerospace join-with up || aerospace join-with down; aerospace layout v_accordion", "${mode_change_main}"]
+l = ["${balance_layout} left w+350", "${mode_change_main}"]
+
+semicolon = ["exec-and-forget aerospace join-with left || aerospace move left; aerospace join-with up || aerospace join-with down; aerospace layout v_accordion", "${mode_change_main}"]
+quote = ["exec-and-forget aerospace join-with right || aerospace move right; aerospace join-with up || aerospace join-with down; aerospace layout v_accordion", "${mode_change_main}"]
+
+w = ['close-all-windows-but-current', "${mode_change_main}"]
+q = ['close-all-windows-but-current', 'close', "${mode_change_main}"]
+esc = "${mode_change_main}"
+
+# AUTOMATION
+# Find out app names by: ❯ aerospace list-apps
+# Make everything floating by default
+# Make everything tiling by default
+[[on-window-detected]]
+check-further-callbacks = true
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.colliderli.iina'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'us.zoom.xos'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.systempreferences'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.valvesoftware.steam'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.valvesoftware.steam.helper'
+run = 'layout floating'
