@@ -19,8 +19,9 @@ vim.o.background = "dark"
 vim.o.number = true
 vim.o.mouse = "a"
 vim.o.helpheight = 99999
-vim.o.termguicolors = true
 vim.o.sessionoptions = "curdir,folds,winpos,winsize,localoptions"
+vim.opt.termguicolors = true
+vim.opt.lazyredraw = false
 
 -- Required for vim.obsidian
 vim.opt.conceallevel = 2
@@ -51,6 +52,7 @@ vim.pack.add {
   { src = 'https://github.com/bluz71/vim-nightfly-colors' },
   { src = 'https://github.com/ellisonleao/gruvbox.nvim' },
   -- Other
+  { src = 'https://github.com/nvim-mini/mini.clue' },
   { src = 'https://github.com/akinsho/toggleterm.nvim' },
   { src = 'https://github.com/vieitesss/miniharp.nvim' },
   { src = 'https://github.com/nvim-lua/plenary.nvim' },
@@ -76,37 +78,41 @@ vim.pack.add {
   { src = 'https://github.com/lewis6991/gitsigns.nvim' },
   { src = 'https://github.com/sindrets/diffview.nvim' },
   { src = 'https://github.com/NeogitOrg/neogit' },
+  -- AI
+  { src = 'https://github.com/github/copilot.vim' },
+  { src = 'https://github.com/CopilotC-Nvim/CopilotChat.nvim' },
 }
 ------------------------------------------------------------------------------------------
 -- Plugins Groups
 ------------------------------------------------------------------------------------------
+require("ai").setup({})
 require("commands").setup({
   side = "right",
 })
-
+require("git").setup({})
+require("lsp").setup({})
+require("theme").setup({
+  is_dark = is_dark
+})
+require("ui").setup({})
 require("wiki").setup({
   keys = {
     open_daily_note_cmd = "<space>d"
   }
 })
-require("lsp").setup({})
-require("git").setup({})
-require("ui").setup({})
-require("theme").setup({
-  is_dark = is_dark
-})
 ------------------------------------------------------------------------------------------
 -- Autocommands
 ------------------------------------------------------------------------------------------
--- FT autocommands
-require("ft.c").autocommands()
-require("ft.cpp").autocommands()
-require("ft.go").autocommands()
-require("ft.js").autocommands()
-require("ft.lua").autocommands()
-require("ft.python").autocommands()
-require("ft.rust").autocommands()
-require("ft.zig").autocommands()
+-- Find and enable all FT autocommands
+local ft_dir = vim.fn.stdpath("config") .. "/lua/ft"
+local exclude_mod_name = "ft/_template"
+local files = vim.fn.glob(ft_dir .. "/*.lua", false, true)
+for _, file in ipairs(files) do
+  local mod_name = file:match("lua/(.*)%.lua$")
+  if mod_name and mod_name ~= exclude_mod_name then
+    require(mod_name).autocommands()
+  end
+end
 
 -- Update wezterm title on enter
 vim.api.nvim_create_autocmd({"BufEnter"}, {
@@ -169,84 +175,69 @@ vim.api.nvim_create_user_command("DeleteOtherBuffers", DeleteOtherBuffers, {})
 -- Keymaps
 ------------------------------------------------------------------------------------------
 local map = vim.keymap.set
-local opts = { noremap = true, silent = true }
-map("n", "<space>e", ":lua require('oil').open_float()<CR>", opts)  -- <S>e : Oil
-map("n", "<space>m", ":Mason<CR>", opts)                            -- <S>m : Mason
-map("n", "<space>n", ":noh<CR>", opts)                              -- <S>n : Disable Selection
-map("n", "<space>l", ":LspInfo<CR>", opts)                          -- <S>l : LspInfo
-map("n", "<space>r", ":FzfLua registers<CR>", opts)                 -- <S>r : Select register to paste
-map("n", "<space>sd", ":AutoSession deletePicker<CR>", opts)        -- <S>sd : Session Delete picker
-map("n", "<space>ss", ":AutoSession search<CR>", opts)              -- <S>ss : Session Search
-map("n", "<space>t", ":TSInstallInfo<CR>", opts)                    -- <S>t : TreeSitter Install Info
-map("n", "<space>u", ":lua vim.pack.update()<CR>", opts)            -- <S>u : Update vim.pack
-map("n", "<space><BS>", function()DeleteOtherBuffers()end, opts)    -- <S><BS> : Close other bufffers
+local opts = function(x) return { noremap = true, silent = true, desc = x or "" } end
 
-map("n", "<leader>f", ":lua vim.lsp.buf.format()<CR>", opts)        -- \f  : Format file
-map("n", "<leader>n", ":noh<CR>", opts)                             -- \n  : Disable Selection
-map("n", "<leader>o", "gx", opts)                                   -- \o  : Open links
+map("n", "<space>e", ":lua require('oil').open_float()<CR>",                                                            opts('Oil'))
+map("n", "<space>i", function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ 0 }), { bufnr = 0 }) end, opts("Toggle LSP Inlay Hints"))
+map("n", "<space>m", ":Mason<CR>",                                                                                      opts('Mason'))
+map("n", "<space>n", ":noh<CR>",                                                                                        opts(':noh'))
+map("n", "<space>l", ":LspInfo<CR>",                                                                                    opts('LspInfo'))
+map("n", "<space>r", ":FzfLua registers<CR>",                                                                           opts('Registers'))
+map("n", "<space>sd", ":AutoSession deletePicker<CR>",                                                                  opts('Autosession: delete'))
+map("n", "<space>ss", ":AutoSession search<CR>",                                                                        opts('Autosession: search'))
+map("n", "<space>t", ":TSInstallInfo<CR>",                                                                              opts('TSInstallInfo'))
+map("n", "<space>u", ":lua vim.pack.update()<CR>",                                                                      opts('Vim Pack: Update'))
+map("n", "<space><BS>", function() DeleteOtherBuffers() end,                                                            opts('Editor: Close all buffers except current'))
+map("n", "<leader>f", ":lua vim.lsp.buf.format()<CR>",                                                                  opts('LSP: Format File'))
+map("n", "<leader>n", ":noh<CR>",                                                                                       opts(':noh'))
+map("n", "<leader>o", "gx",                                                                                             opts('Open Links'))
+map("n", "<F1>", ":FzfLua files<CR>",                                                                                   opts('FzfLua: liles'))
+-- Note: Map F2 to snippets
+map("n", "<F3>", ":FzfLua commands<CR>",                                                                                opts('FzfLua: commands'))
+map("n", "<F4>", ":FzfLua grep<CR>",                                                                                    opts('FzfLua: grep'))
+map("n", "<F5>", ":FzfLua live_grep<CR>",                                                                               opts('FzfLua: live_grep'))
+map("n", "<F6>", ":bd!<CR>",                                                                                            opts('Windows: close all'))
+map("n", "<F7>", ":qa!<CR>",                                                                                            opts('Windows: Force Close'))
+map("n", "<F8>", ":redo<CR>",                                                                                           opts('Redo'))
+map("n", "<F9>", ":FzfLua oldfiles<CR>",                                                                                opts('FzfLua: oldfiles'))
+map("n", "<F10>", ":FzfLua colorschemes<CR>",                                                                           opts('FzfLua: colorschemes'))
+map("n", "<F11>", ":lua require('oil').open_float()<CR>",                                                               opts('Oil'))
+map("n", "<F12>", ":messages<CR>",                                                                                      opts('Messages'))
+map("n", "e=", "10<C-w>>",                                                                                              opts('Editor: Resize >'))
+map("n", "e-", "10<C-w><",                                                                                              opts('Editor: Resize <'))
+map("n", "e", "<C-w>",                                                                                                  opts('Wincmd'))
+map("n", "eL", ":vsplit | wincmd l | b# | close#<CR>",                                                                  opts('Editor: Split right'))
+map("n", "e+", "10<C-w>=",                                                                                              opts('Editor: Resize up'))
+map("n", "e_", "10<C-w>-",                                                                                              opts('Editor: Resize down'))
+map("n", "e[", ":bp<CR>",                                                                                               opts('Editor: Next Tab'))
+map("n", "e]", ":bn<CR>",                                                                                               opts('Editor: Prev Tab'))
+map("n", "e<BS>", function() DeleteOtherBuffers() end,                                                                  opts('Editor: Close all buffers except current'))
+map("n", "H", ":bp<CR>",                                                                                                opts('Editor: Next Tab'))
+map("n", "L", ":bn<CR>",                                                                                                opts('Editor: Prev Tab'))
+map("n", "m'", "'",                                                                                                     opts('Marks: Goto<target>'))
+map("n", "m<BS>", ":delmarks!<CR>",                                                                                     opts('Marks: Delete all marks'))
+map("n", "m\\", ":MarksListAll<CR>",                                                                                    opts('Marks: List all'))
+map("x", "Y", '"+yy',                                                                                                   opts('Copy: Yank to Global Clipboard'))
+map("n", "ts", TrimTrailingWhitespaces,                                                                                 opts('Trim: Trailing Whitespaces'))
+map("n", ";", "<C-d>",                                                                                                  opts('Pagedown'))
+map("n", "'", "<C-u>",                                                                                                  opts('Pageup'))
+map("n", ".", "*",                                                                                                      opts('Select word and next occurence'))
+map("n", ",", "#",                                                                                                      opts('Select word and prev occurence'))
+map("n", "?", ":FzfLua grep_cword<CR>",                                                                                 opts('Search word under cursor in project'))
 
--- map("n", "<leader>r", function()
---   vim.notify("Reloading neovim")
---   dofile(vim.env.MYVIMRC)
---   end, opts)                                                        -- \r  : Reload Neovim
+-- Clues
+local triggers = {}
+local add_triggers = function(modes, key)
+  for _, mode in ipairs(modes) do
+    table.insert(triggers, { mode = mode, keys = key })
+  end
+end
 
-map("n", "<F1>", ":FzfLua files<CR>", opts)                         -- F1  : Fuzzy find files
-map("n", "<F2>", ":FzfLua oldfiles<CR>", opts)                      -- F2  : Fuzzy recent files
-map("n", "<F3>", ":FzfLua commands<CR>", opts)                      -- F3  : Fuzzy show commands
-map("n", "<F4>", ":FzfLua grep<CR>", opts)                          -- F4  : Fuzzy grep
-map("n", "<F5>", ":FzfLua live_grep<CR>", opts)                     -- F5  : Fuzzy live grep
-map("n", "<F6>", ":bd!<CR>", opts)                                  -- F6  : Close window
-map("n", "<F7>", ":qa!<CR>", opts)                                  -- F7  : Close window all force!
-map("n", "<F8>", ":redo<CR>", opts)                                 -- F8  : Redo
-map("n", "<F9>", ":FzfLua oldfiles<CR>", opts)                      -- F9  : Fuzzy recent files
-map("n", "<F10>", ":FzfLua colorschemes<CR>", opts)                 -- F10 : Fuzzy colorschemes
-map("n", "<F11>", ":lua require('oil').open_float()<CR>", opts)     -- F11 : File Explorer
-map("n", "<F12>", ":messages<CR>", opts)                            -- F12 : Messages
+add_triggers({ 'n', 'x' }, '<leader>')
+add_triggers({ 'n', 'v', 'x' }, '<space>')
+add_triggers({ 'n', 'v', 'x' }, '<C-a>')
+add_triggers({ 'n', 'v', 'x' }, 'e')
+add_triggers({ 'n', 'v', 'x' }, 'g')
+add_triggers({ 'n', 'v', 'x' }, 'm')
+require('mini.clue').setup({ triggers = triggers })
 
-map("n", "e", "<C-w>", opts)                                        -- e  : Remap <C-w> wincmd
-map("n", "eL", ":vsplit | wincmd l | b# | close#<CR>", opts)        -- eL : Editor split right
-map("n", "e=", "10<C-w>>", opts)                                    -- e= : Editor reisze >
-map("n", "e-", "10<C-w><", opts)                                    -- e- : Editor resize <
-map("n", "e+", "10<C-w>=", opts)                                    -- e+ : Editor resize up
-map("n", "e_", "10<C-w>-", opts)                                    -- e_ : Editor resize down
-map("n", "e[", ":bp<CR>", opts)                                      -- H : Next tab
-map("n", "e]", ":bn<CR>", opts)                                      -- L : Prev tab
-map("n", "e<BS>", function()DeleteOtherBuffers()end, opts)          -- e<BS> : Close other bufffers
-
-
-map("n", "gb", ":Gitsigns blame<CR>", opts)                         -- gb : Gitsigns blame
-map("n", "gh", ":Gitsigns setloclist target=all<CR>", opts)         -- gh : Gitsigns show all hunks
-map("n", "gg", ":Gitsigns reset_hunk<CR>", opts)                    -- gl : Gitsigns reset hunk
-map("n", "gj", ":Gitsigns nav_hunk next<CR>", opts)                 -- gj : Gitsigns next hunk
-map("n", "gk", ":Gitsigns nav_hunk prev<CR>", opts)                 -- gk : Gitsigns prev hunk
-map("n", "gl", ":Gitsigns blame_line<CR>", opts)                    -- gl : Gitsigns blame line
-map("n", "g<BS>", ":Gitsigns reset_hunk<CR>", opts) 
-
-map("n", "H", ":bp<CR>", opts)                                      -- H : Next tab
-map("n", "L", ":bn<CR>", opts)                                      -- L : Prev tab
-
-
-
-map("n", "m'", "'", opts)                                           -- m'     : Marks Go to <target>
-map("n", "m<BS>", ":delmarks!<CR>", opts)                           -- dm<BR> : Marks Delete all marks
-map("n", "m\\", ":MarksListAll<CR>", opts)                          -- m\     : Marks List all
--- map("x", "y", '"+yy', opts)                                      -- Y      : Yank to Global clipboard
-map("x", "Y", '"+yy', opts)                                         -- Y      : Yank to Global clipboard
-
-map("n", "tJ",
-  ":lua vim.cmd('botright split') vim.cmd('lcd %:p:h') vim.cmd('terminal') vim.cmd('resize -10') vim.cmd('startinsert')<CR>",
-  opts)
-map("n", "th", ":vsplit | terminal<CR>", opts)                      -- th : Split terminal left
-map("n", "tl", ":vert rightbelow split | terminal<CR>", opts)       -- tl : Split terminal right
-map("n", "ts", TrimTrailingWhitespaces, opts)                       -- ts : Trim Trailing White space
-
-map("n", "tj", vim.diagnostic.goto_next, opts)                      -- Jump to next diagnostic"
-map("n", "tk", vim.diagnostic.goto_prev, opts)                      -- Jump to prev diagnostic"
-
-map("t", "<Esc>", '<C-\\><C-n>', opts)                              -- <ESC> : Go back to normal when in termimal mode
-map("t", '<F1>', 'exit<CR><CR>', opts)                              -- <F1>  : Exit terminal
-
-map("n", ";", "<C-d>", opts)                                        -- ; : Pagedown
-map("n", "'", "<C-u>", opts)                                        -- ' : Pageup
-map("n", ".", "*", opts)                                            -- . : Select word and next occurence
-map("n", ",", "#", opts)                                            -- , : Select word and prev occurence

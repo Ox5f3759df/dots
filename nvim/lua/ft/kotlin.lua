@@ -1,11 +1,13 @@
 -- Autocmd template
 local M = {}
 
-M.commands = {}
+M.commands = {
+  "clear; mkdir -p .bins; kotlinc ${file} -d .bins/; kotlin -cp .bins KotlinKt;"
+}
 M.templates = {}
 
-local lang = "FIXME"
-local autocmd_patterns = { 'FIXME' }
+local lang = "Kotlin"
+local autocmd_patterns = { 'kotlin' }
 local commands = require('commands')
 local templates = require('templates')
 local kmap = vim.keymap.set

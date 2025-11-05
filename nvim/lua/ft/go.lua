@@ -1,11 +1,18 @@
 
 local M = {}
+
 M.commands = {
   "go run ${file}"
 }
+M.templates = {}
+
 local lang = "Go"
 local autocmd_patterns = { 'go' }
 local commands = require('commands')
+local templates = require('templates')
+local kmap = vim.keymap.set
+local kopts = function(x) return { noremap = true, silent = true, desc = x or "" } end
+
 M.autocommands = function()
   local langGroup = vim.api.nvim_create_augroup(lang .. 'Group', { clear = true })
   vim.api.nvim_create_autocmd('FileType', {
@@ -15,28 +22,27 @@ M.autocommands = function()
         vim.api.nvim_create_autocmd('BufEnter', {
           buffer = args.buf,
           callback = function()
-            -- vim.notify("Setting autocmds for: " .. lang)
+            -- Filetype bindings here
             local map = vim.keymap.set
             local opts = { noremap = true, silent = true, buffer = args.buf }
             -- Filetype bindings here
-            map("n", "<leader>t", ":lua vim.notify('Test autocmd for: " .. lang .. "')<CR>", opts)                                  -- autocmd tester
-            map("n", commands.config.keys.select_cmd, function() commands.fzf_command_picker(M.commands) end, opts)                 -- Select command to run   
-            map("n", commands.config.keys.select_watchman_cmd, function() commands.watch_pick_and_run(M.commands) end, opts)        -- Select command to watch and run   
-            map("n", commands.config.keys.run_single, function() commands.run_in_terminal_single(M.commands[commands.config.run_single_idx]) end, opts) -- Run single
+            kmap({"n", "v", "x"}, "<F2>", function() templates.insert_snippet(M.templates) end,                                                     kopts('Snippets: Insert'))
+            kmap("i", "<F2>", function() templates.insert_snippet(M.templates, true) end,                                                           kopts('Snippets: Insert'))
+            kmap("n", commands.config.keys.select_cmd, function() commands.fzf_command_picker(M.commands) end,                                      kopts('Cmds: Select and Run'))
+            kmap("n", commands.config.keys.select_watchman_cmd, function() commands.watch_pick_and_run(M.commands) end,                             kopts('Cmds: Select Watch and Run'))
+            kmap("n", commands.config.keys.run_single, function() commands.run_in_terminal_single(M.commands[commands.config.run_single_idx]) end,  kopts('Cmds: Run/Watch Default'))
           end,
         })
         -- Exit
         vim.api.nvim_create_autocmd('BufLeave', {
           buffer = args.buf, -- Also buffer-local
           callback = function()
-            -- vim.notify("Clearing autocmds for: " .. lang)
           end,
         })
         -- Save
         vim.api.nvim_create_autocmd('BufWritePre', {
           buffer = args.buf,
           callback = function()
-            -- vim.notify("Saving autocmds for: " .. lang)
           end,
         })
     end,

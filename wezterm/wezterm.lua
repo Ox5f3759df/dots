@@ -5,23 +5,30 @@ local is_dark = true;
 -- local is_dark = false;
 
 local theme = is_dark and base_themes.dark or base_themes.light
-local font_size = 16
-local font_weight = 500
+local font_size = 18
+local font_weight = 400
 local font_family = "JetBrainsMono Nerd Font Mono"
-local tab_font_family = "Iosevka Aile"
-local font_line_height = 1.15
+local tab_font_family = "JetBrainsMono Nerd Font Mono"
+local tab_font_weight = 600
+local font_line_height = 1.1
 local tab_max_width = 200
-local tab_fancy_font_size = 18
+local tab_fancy_font_size = 14
 local use_fancy_tabs = false
 local tabs_at_bottom = false
 local config = wezterm.config_builder()
 
+-- See: https://wezterm.org/config/lua/config/term.html
+-- This addressing screen tearing issues
+config.term = "wezterm"
+-- config.front_end = "WebGpu"
+config.max_fps = 120
+config.animation_fps = 120
 config.use_fancy_tab_bar = use_fancy_tabs
 config.tab_max_width = tab_max_width
 config.color_scheme = theme
 config.keys = keymaps.keys
 config.key_tables = keymaps.key_tables
-config.font = wezterm.font(font_family)
+-- config.font = wezterm.font(font_family, {weight = font_weight})
 config.font_size = font_size
 config.line_height = font_line_height
 config.enable_scroll_bar = true
@@ -38,7 +45,7 @@ config.inactive_pane_hsb = {
 }
 config.window_frame = {
   font_size = tab_fancy_font_size,
-  font = wezterm.font(tab_font_family, {weight = font_weight})
+  font = wezterm.font(tab_font_family, {weight = tab_font_weight})
 }
 config.window_padding = {
   left = "0.5cell",
@@ -65,13 +72,23 @@ config.colors = {
 }
 
 wezterm.on('update-right-status', function(window, pane)
-  local date = wezterm.strftime '%Y/%m/%d | %H:%M:%S'
+  -- Get all battery info (on laptops may have more than one)
+  local battery_info = wezterm.battery_info()
+  local battery_status = ""
+  for _, b in ipairs(battery_info) do
+    local charge = string.format("%.0f%%", b.state_of_charge * 100)
+    local state = b.state  -- "Charging", "Discharging", "Full", etc.
+    battery_status = battery_status .. string.format("🔋%s (%s) ", charge, state)
+  end
+
+
+  local date = wezterm.strftime '%Y/%m/%d ● %H:%M:%S'
 
   -- Make it italic and underlined
   window:set_right_status(wezterm.format {
     -- { Attribute = { Underline = 'Single' } },
     -- { Attribute = { Italic = true } },
-    { Text = date .. '  ' },
+    { Text = battery_status .. " ● " .. date .. '  ' },
   })
 end)
 

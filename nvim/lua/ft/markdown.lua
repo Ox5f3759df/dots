@@ -2,11 +2,12 @@
 local M = {}
 
 M.commands = {}
-M.templates = {}
+M.templates = {
+  "**$0**"
+}
 
-local lang = "FIXME"
-local autocmd_patterns = { 'FIXME' }
-local commands = require('commands')
+local lang = "Markdown"
+local autocmd_patterns = { 'markdown' }
 local templates = require('templates')
 local kmap = vim.keymap.set
 local kopts = function(x) return { noremap = true, silent = true, desc = x or "" } end
@@ -23,9 +24,7 @@ M.autocommands = function()
             -- Filetype bindings here
             kmap({"n", "v", "x"}, "<F2>", function() templates.insert_snippet(M.templates) end,                                                     kopts('Snippets: Insert'))
             kmap("i", "<F2>", function() templates.insert_snippet(M.templates, true) end,                                                           kopts('Snippets: Insert'))
-            kmap("n", commands.config.keys.select_cmd, function() commands.fzf_command_picker(M.commands) end,                                      kopts('Cmds: Select and Run'))
-            kmap("n", commands.config.keys.select_watchman_cmd, function() commands.watch_pick_and_run(M.commands) end,                             kopts('Cmds: Select Watch and Run'))
-            kmap("n", commands.config.keys.run_single, function() commands.run_in_terminal_single(M.commands[commands.config.run_single_idx]) end,  kopts('Cmds: Run/Watch Default'))
+            kmap("n", "<leader>r", ":RenderMarkdown toggle<CR>",                                                                                    kopts('MarkdownRenderer: Toggle')) -- Render Markdown Toggle
           end,
         })
         -- Exit

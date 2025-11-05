@@ -1,11 +1,13 @@
 -- Autocmd template
 local M = {}
 
-M.commands = {}
+M.commands = {
+  "clear; java ${file}"
+}
 M.templates = {}
 
-local lang = "FIXME"
-local autocmd_patterns = { 'FIXME' }
+local lang = "Java"
+local autocmd_patterns = { 'java', 'javacc' }
 local commands = require('commands')
 local templates = require('templates')
 local kmap = vim.keymap.set

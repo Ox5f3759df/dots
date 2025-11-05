@@ -29,81 +29,65 @@ if vim.g.neovide then
   vim.g.neovide_input_macos_option_key_is_meta = 'both'
   vim.g.neovide_cursor_hack = true
 
+	local map = vim.keymap.set
+	local opts = { noremap = true, silent = true }
 
   -- Keybindings
   -- cmd+a | Select all
-  vim.keymap.set("n", "<D-a>", "ggVG", { noremap = true, silent = true })
-
+  map("n", "<D-a>", "ggVG", opts)
   -- cmd+-= | set for normal/visual/visual-block in one call
-  vim.keymap.set({ "n", "v", "x" }, "<D-=>", increase_font, { noremap = true, silent = true })
-  vim.keymap.set({ "n", "v", "x" }, "<D-->", decrease_font, { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-=>", increase_font, opts)
+  map({ "n", "v", "x" }, "<D-->", decrease_font, opts)
   -- cmd+/ | vim-commentary
-  vim.keymap.set({ "n", "v", "x" }, "<D-/>", 'gcc', { remap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-/>", 'gcc', { remap = true, silent = true })
   -- cmd+e | netrw / oil file explorer
-  vim.keymap.set({ "n", "v", "x" }, "<D-e>", ":lua require('oil').open_float()<CR>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-e>", "<C-o>:lua require('oil').open_float()<CR>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-e>", ":lua require('oil').open_float()<CR>",  opts)
+  map("i", "<D-e>", "<C-o>:lua require('oil').open_float()<CR>",  opts)
   -- cmd+shift+d | Go to definition
-  vim.keymap.set({ "n", "v", "x" }, "<D-S-d>", function() lsp.definition_split() end,  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-S-d>", function() lsp.definition_split() end,  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-S-d>", function() lsp.definition_split() end,  opts)
+  map("i", "<D-S-d>", function() lsp.definition_split() end,  opts)
   -- cmd+f | grep
-  vim.keymap.set({ "n", "v", "x" }, "<D-f>", ":FzfLua grep<CR>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-f>", "<C-o>:FzfLua grep<CR>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-f>", ":FzfLua grep<CR>",  opts)
+  map("i", "<D-f>", "<C-o>:FzfLua grep<CR>",  opts)
   -- cmd+shift+f | Find in files
-  vim.keymap.set({ "n", "v", "x" }, "<D-S-f>", ":FzfLua live_grep<CR>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-S-f>", "<C-o>:FzfLua live_grep<CR>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-S-f>", ":FzfLua live_grep<CR>",  opts)
+  map("i", "<D-S-f>", "<C-o>:FzfLua live_grep<CR>",  opts)
   -- cmd+shift+h | Go back
-  vim.keymap.set({ "n", "v", "x" }, "<D-S-h>", "<C-o>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-S-h>", "<C-o><C-o>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-S-h>", "<C-o>",  opts)
+  map("i", "<D-S-h>", "<C-o><C-o>",  opts)
   -- cmd+shift+l | Go back
-  vim.keymap.set({ "n", "v", "x" }, "<D-S-l>", "<C-i>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-S-h>", "<C-o><C-i>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-S-l>", "<C-i>",  opts)
+  map("i", "<D-S-h>", "<C-o><C-i>",  opts)
   -- cmd+m | Messages
-  vim.keymap.set({ "n", "v", "x" }, "<D-m>", ":messages<CR>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-m>", "<C-o>:messages<CR>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-m>", ":messages<CR>",  opts)
+  map("i", "<D-m>", "<C-o>:messages<CR>",  opts)
   -- cmd+o | Open Buffers
-  vim.keymap.set({ "n", "v", "x" }, "<D-o>", ":FzfLua oldfiles<CR>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-o>", "<C-o>:FzfLua oldfiles<CR>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-o>", ":FzfLua oldfiles<CR>",  opts)
+  map("i", "<D-o>", "<C-o>:FzfLua oldfiles<CR>",  opts)
   -- cmd+p | File Picker
-  vim.keymap.set({ "n", "v", "x" }, "<D-p>", ":FzfLua files<CR>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-p>", "<C-o>:FzfLua files<CR>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-p>", ":FzfLua files<CR>",  opts)
+  map("i", "<D-p>", "<C-o>:FzfLua files<CR>",  opts)
   -- cmd+r | Recent files
-  vim.keymap.set({ "n", "v", "x" }, "<D-r>", ":AutoSession search<CR>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-r>", "<C-o>:AutoSession search<CR>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-r>", ":AutoSession search<CR>",  opts)
+  map("i", "<D-r>", "<C-o>:AutoSession search<CR>",  opts)
   -- cmd+s | Save
-  vim.keymap.set({ "n", "v", "x" }, "<D-s>", ":w!<CR>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-s>", "<C-o>:w!<CR>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-s>", ":w!<CR>",  opts)
+  map("i", "<D-s>", "<C-o>:w!<CR>",  opts)
   -- cmd+shift+s | Save Session
-  vim.keymap.set({ "n", "v", "x" }, "<D-S-s>", ":SessionSave<CR>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-S-s>", "<C-o>:SessionSave<CR>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-S-s>", ":SessionSave<CR>",  opts)
+  map("i", "<D-S-s>", "<C-o>:SessionSave<CR>",  opts)
   -- cmd+v | paste
-  vim.keymap.set({ "n", "v", "x" }, "<D-v>", '"+p', { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-v>", '<C-o>"+p', { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-v>", '"+p', opts)
+  map("i", "<D-v>", '<C-o>"+p', opts)
   -- cmd+w | Buffer Delete
-  vim.keymap.set({ "n", "v", "x" }, "<D-w>", ":bd!<CR>",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-w>", "<C-o>:bd!<CR>",  { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-w>", ":bd!<CR>",  opts)
+  map("i", "<D-w>", "<C-o>:bd!<CR>",  opts)
   -- cmd+z | Undo
-  vim.keymap.set({ "n", "v", "x" }, "<D-z>", "u",  { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-z>", "<C-o>u", { noremap = true, silent = true })
-
+  map({ "n", "v", "x" }, "<D-z>", "u",  opts)
+  map("i", "<D-z>", "<C-o>u", opts)
   -- cmd-shift+z | Redo
-  vim.keymap.set({ "n", "v", "x", "s" }, "<D-S-z>", "<cmd>redo<CR>", { noremap = true, silent = true })
-  vim.keymap.set("i", "<D-S-z>", "<C-o><cmd>redo<CR>", { noremap = true, silent = true })
+  map({ "n", "v", "x", "s" }, "<D-S-z>", "<cmd>redo<CR>", opts)
+  map("i", "<D-S-z>", "<C-o><cmd>redo<CR>", opts)
 
   -- Window Movement
   local win_move = {
@@ -114,8 +98,8 @@ if vim.g.neovide then
   }
 
   for k, v in pairs(win_move) do
-    vim.keymap.set({ "n", "v", "x", "s" }, k, v, { noremap = true, silent = true })
-    vim.keymap.set("i", k, "<C-o>" .. v, { noremap = true, silent = true })
+    map({ "n", "v", "x", "s" }, k, v, opts)
+    map("i", k, "<C-o>" .. v, opts)
   end
 
   vim.defer_fn(function()

@@ -62,7 +62,7 @@ local key_tables = {
 		{ key = "u", mods = "CTRL", action = act.CopyMode({ MoveByPage = -0.5 })},
 		{ key = "v", mods = "NONE", action = act.CopyMode({ SetSelectionMode = "Cell" })},
 		{ key = "v", mods = "CTRL", action = act.CopyMode({ SetSelectionMode = "Block" })},
-		{ key = "w",        mods = "NONE", action = act.CopyMode("MoveForwardWord") },
+		{ key = "w", mods = "NONE", action = act.CopyMode("MoveForwardWord") },
 		{ key = "y", mods = "NONE", action = act.Multiple({{ CopyTo = "ClipboardAndPrimarySelection" }, { CopyMode = "Close" }})},
 		{ key = "PageUp",   mods = "NONE", action = act.CopyMode("PageUp") },
 		{ key = "PageDown", mods = "NONE", action = act.CopyMode("PageDown") },
@@ -122,7 +122,8 @@ local wez_kb = {
 	-- Pane: Adjust size up
 	{ key = "F12", mods = "OPT",        action = wezterm.action.AdjustPaneSize({ "Up", 10 }) },
 	-- Tab: Close
-	{ key = "w", mods = "OPT",         action = wezterm.action({ CloseCurrentPane = { confirm = false } }) },
+	-- { key = "w", mods = "OPT",         action = wezterm.action({ CloseCurrentPane = { confirm = false } }) },
+	{ key = "w", mods = "CTRL",         action = wezterm.action({ CloseCurrentPane = { confirm = false } }) },
 	-- Tab: Spawn Tab
 	{ key = "t", mods = "SUPER",       action = act.SpawnTab("CurrentPaneDomain") },
 	-- Find: Search

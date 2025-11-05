@@ -1,23 +1,45 @@
 local M = {}
 
-local config = {}
+M.config = {
+  keys_miniharp = {
+    toggle_file = "ms",
+    toggle_file2 = "<leader>s",
+    next = "<C-'>",
+    prev = "<C-;>",
+    clear = "md",
+    list = "ml"
+  }
+}
+
+local kmap = vim.keymap.set
+local kopts = function(x) return { noremap = true, silent = true, desc = x or "" } end
+
+local function setup_plugin_render_markdown()
+  -- Render markdown
+  require('render-markdown').setup({
+    -- Add copilot chat for better rendering
+    file_types = { 'markdown', 'copilot-chat' },
+  })
+end
 
 local function setup_plugin_miniharp()
   -- Miniharp: like harpoon2
   local miniharp = require('miniharp')
   miniharp.setup({
-    autoload = true, -- load marks for this cwd on startup (default: true)
-    autosave = true, -- save marks for this cwd on exit (default: true)
+    autoload = true,         -- load marks for this cwd on startup (default: true)
+    autosave = true,         -- save marks for this cwd on exit (default: true)
     show_on_autoload = true, -- show popup list after a successful autoload (default: false)
   })
-  vim.keymap.set('n', '<C-s>', miniharp.toggle_file,                                                            { desc = 'miniharp: toggle file mark' })
-  vim.keymap.set('n', '<leader>s', miniharp.toggle_file,                                                        { desc = 'miniharp: toggle file mark' })
-  vim.keymap.set('n', "<C-'>", miniharp.next,                                                                   { desc = 'miniharp: next file mark' })
-  vim.keymap.set('n', '<C-;>', miniharp.prev,                                                                   { desc = 'miniharp: prev file mark' })
-  -- vim.keymap.set('n', '<C-g>', miniharp.show_list,                                                              { desc = 'miniharp: list marks' })
-  -- vim.keymap.set('n', '<leader>g', miniharp.show_list,                                                          { desc = 'miniharp: list marks' })
-  -- vim.keymap.set('n', '<leader>X', function() miniharp.clear(); vim.notify('miniharp: cleared all marks') end,  { desc = 'miniharp: clear marks' })
-  vim.keymap.set('n', '<C-x>', function() miniharp.clear(); vim.notify('miniharp: cleared all marks') end,      { desc = 'miniharp: clear marks' })
+
+  -- Keymaps
+  kmap('n', M.config.keys_miniharp.toggle_file, miniharp.toggle_file, kopts('Harp: Toggle'))
+  kmap('n', M.config.keys_miniharp.toggle_file2, miniharp.toggle_file, kopts('Harp: Toggle'))
+  kmap('n', M.config.keys_miniharp.next, miniharp.next, kopts('Harp: Jump Next'))
+  kmap('n', M.config.keys_miniharp.prev, miniharp.prev, kopts('Harp: Jump Prev'))
+  kmap('n', M.config.keys_miniharp.list, miniharp.show_list, kopts('Harp: List'))
+  kmap('n', M.config.keys_miniharp.clear, function()
+      miniharp.clear(); vim.notify('Harp: cleared all marks')
+  end, kopts('Harp: Clear all'))
 end
 
 local function setup_plugin_autosession()
@@ -31,12 +53,6 @@ local function setup_plugin_mini_tabline()
 end
 
 local function setup_plugin_lualine()
-
-
-  local function datetime()
-    return os.date("%Y/%m/%d %H:%M")
-  end
-
   -- Lualine
   require('lualine').setup({
     options = {
@@ -47,7 +63,7 @@ local function setup_plugin_lualine()
 
     },
     winbar = {
-      lualine_c = { { "navic", color_correction = "static" }  },
+      lualine_c = { { "navic", color_correction = "static" } },
       -- lualine_x = { "venv-selector" },
       lualine_x = { "venv-selector", { 'filename', path = 1, }, 'progress' }, -- 1: relative 2: fullpath 3. fullpathv2
       -- lualine_z = { }
@@ -57,13 +73,13 @@ local function setup_plugin_lualine()
       lualine_a = { 'mode' },
       lualine_b = { 'branch' },
       -- lualine_c = { { 'filename', path = 1, }, 'progress' }, -- 1: relative 2: fullpath 3. fullpathv2
-      lualine_z = { 'diff', 'diagnostics', 'filetype'  },
+      lualine_z = { 'diff', 'diagnostics', 'filetype' },
     },
   })
 end
 
 local function setup_plugin_marks()
-  require'marks'.setup({
+  require 'marks'.setup({
     -- whether to map keybinds or not. default true
     default_mappings = true
   })
@@ -220,6 +236,8 @@ end
 
 function M.setup(opts)
   opts = opts or {}
+  M.config.keys_miniharp = opts.keys_miniharp or M.config.keys_miniharp
+  M.config.keys_render_markdown = opts.keys_render_markdown or M.config.keys_render_markdown
   setup_plugin_oil()
   setup_plugin_dressing()
   setup_plugin_autosession()
@@ -228,7 +246,7 @@ function M.setup(opts)
   setup_plugin_marks()
   setup_plugin_miniharp()
   setup_plugin_mini_tabline()
-
+  setup_plugin_render_markdown()
 end
 
 return M

@@ -49,11 +49,13 @@ local F = { key = "F" }
 local g = { key = "g" }
 local G = { key = "G" }
 local h = { key = "h" }
+local i = { key = "i" }
 local m = { key = "m" }
 local q = { key = "q" }
 local r = { key = "r" }
 local s = { key = "s" }
 local u = { key = "u" }
+local v = { key = "v" }
 local V = { key = "V" }
 local w = { key = "w" }
 local y = { key = "y" }
@@ -75,6 +77,7 @@ local altu = { key = "u", mods = "OPT" }
 local altshiftp = { key = "p", mods = "OPT|SHIFT" }
 local altshiftm = { key = "m", mods = "OPT|SHIFT" }
 
+local cmd0 = { key = "0", mods = "CMD" }
 local cmd9 = { key = "9", mods = "CMD" }
 local cmda = { key = "a", mods = "CMD" }
 local cmdc = { key = "c", mods = "CMD" }
@@ -103,19 +106,20 @@ local cmdshiftr = { key = "r", mods = "CMD|SHIFT" }
 local cmdshifts = { key = "s", mods = "CMD|SHIFT" }
 local cmdshiftw = { key = "w", mods = "CMD|SHIFT" }
 local cmdshiftz = { key = "z", mods = "CMD|SHIFT" }
+local cmdshiftslash = { key = "/", mods = "CMD|SHIFT" }
 
 M.keymaps_vim = {
 	-- [cmd+/]: Comment Line gcc (tpope/vim-commentary: comment line)
 	KeyBind(cmdslash, { action = Sequence({ Send(g), Send(c) }) }),
 	-- [cmd+a]: :ggVG (Select all)
 	KeyBind(cmda, { action = Sequence({ Send(escape), Send(g), Send(g), Send(V), Send(G), Send(enter) }) }),
-	-- [cmd+d]: * (visualstar: select word under cursor)
-	KeyBind(cmdd, { action = Sequence({ Send(escape), Send(asterix) }) }),
+	-- [cmd+d]: * (viw)
+	KeyBind(cmdd, { action = Sequence({ Send(escape), Send(v), Send(i), Send(w) }) }),
 	-- [cmd+e]: netrw <F1> (Explorer)
 	KeyBind(cmde, { action = Sequence({ Send(escape), Send(f11) }) }),
 	-- [cmd+f]: Find in files: RgExactMatch <F5>
 	KeyBind(cmdf, { action = Sequence({ Send(escape), Send(f5) }) }),
-  -- [cmd+o]: Open Buffers <F9>
+  -- [cmd+o]: Recent Files <F9>
   KeyBind(cmdo, { action = Sequence({ Send(escape), Send(f9) }) }),
   -- [cmd+m]: Messages <F12>
   KeyBind(cmdm, { action = Sequence({ Send(escape), Send(f12) }) }),
@@ -133,8 +137,10 @@ M.keymaps_vim = {
 	KeyBind(cmdw, { action = Sequence({ Send(escape), Send(f6) }) }),
 	-- [cmd+z]: u (undo)
 	KeyBind(cmdz, { action = Sequence({ Send(escape), Send(u) }) }),
+
   -- [alt+shift+m]: Messages: <\-m>
 	KeyBind(altshiftm, { action = Sequence({ Send(escape), Send(fslash), Send(m) }) }),
+
 	-- [cmd+shift+d]: Go to definition: cmd+shift+d -> gd
 	KeyBind(cmdshiftd, { action = Sequence({ Send(escape), Send(g), Send(d) }) }),
 	-- [cmd+shift+f]: Find in files: Rg <F4>
@@ -145,15 +151,16 @@ M.keymaps_vim = {
 	KeyBind(cmdshiftg, { action = Sequence({ Send(escape), Send(g), Send(s) }) }),
 	-- [cmd+shift+l]: <C-i> (Go forward)
 	KeyBind(cmdshiftl, { action = Sequence({ Send(escape), Send(ctrli) }) }),
-  -- [cmd+9]: Change theme: <F10> 
-  KeyBind(cmd9, { action = Sequence({ Send(escape), Send(f10) }) }),
 	-- [cmd+shift+p]: Commands: <F3>
 	KeyBind(cmdshiftp, { action = Sequence({ Send(escape), Send(f3) }) }),
   -- [cmd+shift+s]: Save Session: <F11> 
   KeyBind(cmdshifts, { action = Sequence({ Send(escape), Send(f11) }) }),
 	-- [cmd+shift+z]: <C-r> (redo)
 	KeyBind(cmdshiftz, { action = Sequence({ Send(escape), Send(f8) }) }),
-
+  -- [cmd+9]: Change theme: <F10> 
+  KeyBind(cmd9, { action = Sequence({ Send(escape), Send(f10) }) }),
+  -- [cmd+0]: Snippets: <F2> 
+  KeyBind(cmd0, { action = Sequence({ Send(f2) }) }),
 }
 
 return M

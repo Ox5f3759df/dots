@@ -30,8 +30,8 @@ local function setup_theme_gruvbox()
   })
 end
 
-local function setup_themes(is_dark)
-  if is_dark then
+local function setup_themes()
+  if M.config.is_dark then
     -- Dark
     vim.api.nvim_set_hl(0, "CursorLine", { bg = "#1a1a1a" })
     -- vim.g.lualine_theme = 'codedark'
@@ -46,13 +46,13 @@ local function setup_themes(is_dark)
     -- vim.g.lualine_theme = 'powerline'
     vim.env.BAT_THEME = "Visual Studio Dark+"
     vim.o.background = "dark"
-    -- vim.cmd.colorscheme("vscode")
+    vim.cmd.colorscheme("vscode")
     -- vim.cmd.colorscheme("carbonfox")
     -- vim.cmd.colorscheme("nightingale")
     -- vim.cmd.colorscheme("moonfly")
     -- vim.cmd.colorscheme("nightfly")
     -- vim.cmd.colorscheme("gruvbox")
-    vim.cmd.colorscheme("retrobox")
+    -- vim.cmd.colorscheme("retrobox")
   else
     -- Light
     vim.api.nvim_set_hl(0, "CursorLine", { bg = "#dadada" })
@@ -65,9 +65,11 @@ end
 
 M.setup = function(opts)
   opts = opts or {}
-  M.config.is_dark = opts.is_dark or M.config.is_dark
+  if opts.is_dark ~= nil then
+    M.config.is_dark = opts.is_dark
+  end
   setup_theme_gruvbox()
-  setup_themes(M.config.is_dark)
+  setup_themes()
 
   -- Enforced Colors
   -- Setup visual selection color
