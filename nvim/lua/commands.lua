@@ -12,13 +12,9 @@ M.terms = {}
 
 M.config = {
 	keys = {
-		ask_cmd = "<leader>x",
-		ask_watchman_cmd = "<leader>W",
-		toggleterm_cmd = "tt",
 		select_cmd = "<leader>c",
 		select_watchman_cmd = "<leader>w",
 		run_single = "<leader>r",
-		kill_terminal_cmd = "<leader>d",
 		spawn_term_right_cmd = "tl",
 	},
 	run_single_idx = 1, -- Index in the commands that runs single file
@@ -31,18 +27,20 @@ M.config = {
 	default_right_size = 90,
 }
 
-local map = vim.keymap.set
-local opts = { noremap = true, silent = true }
+local _map = vim.keymap.set
+local _opts = { noremap = true, silent = true }
 local kmap = vim.keymap.set
-local kopts = function(x) return { noremap = true, silent = true, desc = x or "" } end
+local kopts = function(x)
+	return { noremap = true, silent = true, desc = x or "" }
+end
 
 local function setup_plugin_toggle_terminal()
 	-- Setup toggleterm
 	toggleterm.setup({})
-	map("t", "<Esc>", "<C-\\><C-n>", opts) -- <ESC> : Go back to normal when in termimal mode
-	map("t", "<Esc>", "<C-\\><C-n>", opts) -- <ESC> : Go back to normal when in termimal mode
-	map("t", "<F1>", "exit<CR><CR>", opts) -- <F1>  : Exit terminal
-	map("t", "<F1>", "exit<CR><CR>", opts) -- <F1>  : Exit terminal
+	_map("t", "<Esc>", "<C-\\><C-n>", _opts) -- <ESC> : Go back to normal when in termimal mode
+	_map("t", "<Esc>", "<C-\\><C-n>", _opts) -- <ESC> : Go back to normal when in termimal mode
+	_map("t", "<F1>", "exit<CR><CR>", _opts) -- <F1>  : Exit terminal
+	_map("t", "<F1>", "exit<CR><CR>", _opts) -- <F1>  : Exit terminal
 end
 
 M.run_in_terminal_single = function(cmd)
@@ -50,7 +48,7 @@ M.run_in_terminal_single = function(cmd)
 		local should_watch = inputw == "y"
 		if should_watch then
 			inputw = "${file}"
-		else
+		elseif inputw == "n" then
 			inputw = ""
 		end
 		local watchman_paths = utils.expand_placeholders(inputw)
@@ -175,7 +173,9 @@ end
 M.ask_and_run = function()
 	local default_cmd = storage.read_storage_key_list_latest(storage_root_key) or ""
 	vim.ui.input({ prompt = "Enter Command: ", default = default_cmd }, function(input)
-		M.run_in_terminal(input)
+		if input ~= nil and input ~= "" then
+			M.run_in_terminal(input)
+		end
 	end)
 end
 
@@ -198,14 +198,16 @@ M.watch_ask_and_run = function()
 			local watchman_paths = utils.expand_placeholders(inputw)
 			local default_cmd = storage.read_storage_key_list_latest(storage_root_key) or ""
 			vim.ui.input({ prompt = "Enter Command: ", default = default_cmd }, function(inputc)
-				M.run_in_terminal(inputc, watchman_paths)
+				if inputc ~= nil and inputc ~= "" then
+					M.run_in_terminal(inputc, watchman_paths)
+				end
 			end)
 		end
 	end)
 end
 
 M.setup = function(opts)
-	opts = opts or {}
+  opts = opts or {}
 	M.config.keys = opts.keys or M.config.keys
 	M.config.side = opts.side or M.config.side
 	opts.sizes = opts.sizes or M.config.sizes
@@ -214,14 +216,15 @@ M.setup = function(opts)
 
 	setup_plugin_toggle_terminal()
 
-	local map = vim.keymap.set
-	local opts = { noremap = true, silent = true }
-
-	kmap("n", M.config.keys.ask_cmd, function() M.ask_and_run() end, kopts("Cmds: Run"))
-	kmap("n", M.config.keys.ask_watchman_cmd, function() M.watch_ask_and_run() end, kopts("Cmds: Watch and Run"))
-	kmap("n", M.config.keys.toggleterm_cmd, function() toggle_terminal() end, kopts("ToggleTermToggle"))
-	kmap("n", M.config.keys.kill_terminal_cmd, function() M.fzf_delete_terminal() end, kopts("Terminals: Select and Remove"))
-	kmap("n", M.config.keys.spawn_term_right_cmd, function() M.run_in_terminal("", "", "term") end, kopts("Terminals: Spawn or Reuse"))
+	kmap("n", "<leader>x", function() M.ask_and_run() end, kopts("Cmds: Run"))
+	kmap("n", "<leader>W", function()M.watch_ask_and_run()end, kopts("Cmds: Watch and Run"))
+	kmap("n", "tl", function()M.run_in_terminal("", "", "term")end, kopts("Terminals: Spawn or Reuse"))
+	kmap("n", "td", function()M.fzf_delete_terminal()end, kopts("Terminals: Select and Remove"))
+	for _, key in ipairs({ "tt", "<space>t" }) do
+		kmap("n", key, function()
+			toggle_terminal()
+		end, kopts("ToggleTermToggle"))
+	end
 end
 
 return M

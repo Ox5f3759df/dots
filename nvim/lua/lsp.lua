@@ -49,10 +49,7 @@ local kopts = function(x, buf)
   end
   return { noremap = true, silent = true, desc = x or "" }
 end
-------------------------------------------------------
--- LSP Configs
--- See :h lsp-quickstart for more details
-------------------------------------------------------
+
 local function setup_lspconfig_rust()
   -- See: https://github.com/neovim/nvim-lspconfig/blob/master/lsp/rust_analyzer.lua
   -- See: https://www.reddit.com/r/neovim/comments/1kk4s0u/how_to_configure_rustanalyzer_using_vimlspconfig/
@@ -79,9 +76,6 @@ local function setup_lspconfig_rust()
   -- }
 end
 
-------------------------------------------------------
--- Autocommands for LSP
-------------------------------------------------------
 local function setup_autocommands_lsp()
   vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(ev)
@@ -142,10 +136,6 @@ local function setup_autocommands_lsp()
   })
 end
 
-
-------------------------------------------------------
--- Plugin: venv-selector
-------------------------------------------------------
 local function setup_plugin_venv_selector_python()
   require("venv-selector").setup({
     enable_default_searches = false,
@@ -157,9 +147,6 @@ local function setup_plugin_venv_selector_python()
   })
 end
 
-------------------------------------------------------
--- Plugin: Navic: Breadcrumbs
-------------------------------------------------------
 local function setup_plugin_navic()
   require('nvim-navic').setup({
       lsp = {
@@ -168,9 +155,7 @@ local function setup_plugin_navic()
       },
   })
 end
-------------------------------------------------------
--- Plugin: Trouble
-------------------------------------------------------
+
 local function setup_plugin_trouble()
   require('trouble').setup({
     win = {
@@ -179,9 +164,7 @@ local function setup_plugin_trouble()
     },
   })
 end
-------------------------------------------------------
--- Plugin: Mason
-------------------------------------------------------
+
 local function setup_plugin_mason()
   require('mason').setup()
   require('mason-lspconfig').setup()
@@ -189,9 +172,7 @@ local function setup_plugin_mason()
     ensure_installed = M.config.mason_ensure_installed
   })
 end
-------------------------------------------------------
--- Plugin: Blink cmp
-------------------------------------------------------
+
 local function setup_plugin_blink_cmp()
   -- Blink
   -- Keymaps (Default) https://cmp.saghen.dev/modes/cmdline.html
@@ -238,9 +219,7 @@ local function setup_plugin_blink_cmp()
     }
   })
 end
-------------------------------------------------------
--- Plugin: Hover
-------------------------------------------------------
+
 local function setup_plugin_hover()
   require('hover').config({
     --- List of modules names to load as providers.
@@ -277,9 +256,7 @@ local function setup_plugin_hover()
   vim.keymap.set('n', 'gK', function() require('hover').enter() end, { desc = 'hover.nvim (enter)' })
 
 end
-------------------------------------------------------
--- Plugin: nvim-treesitter
-------------------------------------------------------
+
 local function setup_plugin_nvim_treesitter()
   require('nvim-treesitter.configs').setup({
     ensure_installed = M.config.treesitter_ensure_installed,
@@ -288,9 +265,6 @@ local function setup_plugin_nvim_treesitter()
   })
 end
 
-------------------------------------------------------
--- Functions
-------------------------------------------------------
 M.definition_split = function()
   vim.lsp.buf.definition({
     on_list = function(options)
@@ -312,27 +286,22 @@ M.definition_split = function()
   })
 end
 
-------------------------------------------------------
--- Setup
-------------------------------------------------------
 function M.setup(opts)
   opts = opts or {}
   M.config.python_venv_dir = opts.python_venv_dir or M.config.python_venv_dir
   M.config.mason_ensure_installed = opts.mason_ensure_installed or M.config.mason_ensure_installed
   M.config.treesitter_ensure_installed = opts.treesitter_ensure_installed or M.config.treesitter_ensure_installed
-  setup_plugin_navic()
-  setup_plugin_hover()
-  setup_plugin_nvim_treesitter()
-  setup_plugin_mason()
-  setup_plugin_trouble()
-  setup_plugin_blink_cmp()
   setup_autocommands_lsp()
+  setup_plugin_blink_cmp()
+  setup_plugin_hover()
+  setup_plugin_mason()
+  setup_plugin_navic()
+  setup_plugin_nvim_treesitter()
+  setup_plugin_trouble()
   setup_plugin_venv_selector_python()
+
   -- Setup LspConfigs
   setup_lspconfig_rust()
-
-	local map = vim.keymap.set
-	local opts = { noremap = true, silent = true }
 
   -- Keymaps
   kmap("n", "tj", function() vim.diagnostic.jump({count = 1, float = true }) end, kopts('Diagnostics: Jump next'))

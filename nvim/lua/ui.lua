@@ -10,7 +10,6 @@ M.config = {
     list = "ml"
   }
 }
-
 local kmap = vim.keymap.set
 local kopts = function(x) return { noremap = true, silent = true, desc = x or "" } end
 
@@ -18,38 +17,14 @@ local function setup_plugin_render_markdown()
   -- Render markdown
   require('render-markdown').setup({
     -- Add copilot chat for better rendering
-    file_types = { 'markdown', 'copilot-chat' },
+    -- file_types = { 'markdown', 'copilot-chat' },
+    file_types = { 'copilot-chat' },
   })
-end
-
-local function setup_plugin_miniharp()
-  -- Miniharp: like harpoon2
-  local miniharp = require('miniharp')
-  miniharp.setup({
-    autoload = true,         -- load marks for this cwd on startup (default: true)
-    autosave = true,         -- save marks for this cwd on exit (default: true)
-    show_on_autoload = true, -- show popup list after a successful autoload (default: false)
-  })
-
-  -- Keymaps
-  kmap('n', M.config.keys_miniharp.toggle_file, miniharp.toggle_file, kopts('Harp: Toggle'))
-  kmap('n', M.config.keys_miniharp.toggle_file2, miniharp.toggle_file, kopts('Harp: Toggle'))
-  kmap('n', M.config.keys_miniharp.next, miniharp.next, kopts('Harp: Jump Next'))
-  kmap('n', M.config.keys_miniharp.prev, miniharp.prev, kopts('Harp: Jump Prev'))
-  kmap('n', M.config.keys_miniharp.list, miniharp.show_list, kopts('Harp: List'))
-  kmap('n', M.config.keys_miniharp.clear, function()
-      miniharp.clear(); vim.notify('Harp: cleared all marks')
-  end, kopts('Harp: Clear all'))
 end
 
 local function setup_plugin_autosession()
   -- Autosession
   require("auto-session").setup({})
-end
-
-
-local function setup_plugin_mini_tabline()
-  require('mini.tabline').setup()
 end
 
 local function setup_plugin_lualine()
@@ -75,13 +50,6 @@ local function setup_plugin_lualine()
       -- lualine_c = { { 'filename', path = 1, }, 'progress' }, -- 1: relative 2: fullpath 3. fullpathv2
       lualine_z = { 'diff', 'diagnostics', 'filetype' },
     },
-  })
-end
-
-local function setup_plugin_marks()
-  require 'marks'.setup({
-    -- whether to map keybinds or not. default true
-    default_mappings = true
   })
 end
 
@@ -137,12 +105,12 @@ local function setup_plugin_dressing()
       -- relative = "cursor",
       relative = "win",
       -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
-      prefer_width = 40,
+      prefer_width = 70,
       width = nil,
       -- min_width and max_width can be a list of mixed types.
       -- min_width = {20, 0.2} means "the greater of 20 columns or 20% of total"
-      max_width = { 140, 0.9 },
-      min_width = { 20, 0.2 },
+      -- max_width = { 140, 0.9 },
+      -- min_width = { 20, 0.2 },
       buf_options = {},
       win_options = {
         -- Disable line wrapping
@@ -195,6 +163,9 @@ local function setup_plugin_oil()
       end,
     },
     default_file_explorer = true,
+    view_options = {
+      show_hidden = true,
+    },
     keymaps = {
       -- Close
       ["<C-c>"] = { "actions.close", mode = "n" },
@@ -202,6 +173,7 @@ local function setup_plugin_oil()
       ["q"] = { "actions.close", mode = "n" },
       -- Select
       ["<CR>"] = { "actions.select", mode = "n" },
+      ["<C-CR>"] = { "actions.select", opts = { vertical = true } },
       -- Parent
       ["-"] = { "actions.parent", mode = "n" },
       ["h"] = { "actions.parent", mode = "n" },
@@ -212,40 +184,51 @@ local function setup_plugin_oil()
       ["`"] = { "actions.cd", mode = "n" },
       -- Toggle hidden
       ["g."] = { "actions.toggle_hidden", mode = "n" },
+      ["."] = { "actions.toggle_hidden", mode = "n" },
       -- Help
       ["g?"] = { "actions.show_help", mode = "n" },
       ["?"] = { "actions.show_help", mode = "n" },
       -- Custom
-      ["="] = {
-        desc = "Copy relative path to clipboard",
-        callback = function()
-          local entry = oil.get_cursor_entry()
-          if not entry then
-            vim.notify("No entry selected", vim.log.levels.WARN)
-            return
-          end
-          local full_path = oil.get_current_dir() .. entry.name
-          local rel_path = vim.fn.fnamemodify(full_path, ":.")
-          vim.fn.setreg("+", rel_path)
-          vim.notify("Copied: " .. rel_path)
-        end,
-      }
+      -- ["="] = {
+      --   desc = "Copy relative path to clipboard",
+      --   callback = function()
+      --     local entry = oil.get_cursor_entry()
+      --     if not entry then
+      --       vim.notify("No entry selected", vim.log.levels.WARN)
+      --       return
+      --     end
+      --     local full_path = oil.get_current_dir() .. entry.name
+      --     local rel_path = vim.fn.fnamemodify(full_path, ":.")
+      --     vim.fn.setreg("+", rel_path)
+      --     vim.notify("Copied: " .. rel_path)
+      --   end,
+      -- }
     }
   })
+end
+
+local function setup_plugin_mini_ui()
+  -- mini.indentscope
+  require('mini.indentscope').setup()
+  -- mini.notify
+  -- preserve original vim.notify
+  local notify_orig = vim.notify
+  require('mini.notify').setup()
+  vim.notify = notify_orig
+  -- mini.tabline
+  require('mini.tabline').setup()
 end
 
 function M.setup(opts)
   opts = opts or {}
   M.config.keys_miniharp = opts.keys_miniharp or M.config.keys_miniharp
   M.config.keys_render_markdown = opts.keys_render_markdown or M.config.keys_render_markdown
-  setup_plugin_oil()
-  setup_plugin_dressing()
   setup_plugin_autosession()
+  setup_plugin_dressing()
   setup_plugin_fzf_lua()
   setup_plugin_lualine()
-  setup_plugin_marks()
-  setup_plugin_miniharp()
-  setup_plugin_mini_tabline()
+  setup_plugin_mini_ui()
+  setup_plugin_oil()
   setup_plugin_render_markdown()
 end
 

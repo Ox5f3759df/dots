@@ -1,28 +1,12 @@
 local M = {}
 
-M.config = {
-	keys = {
-		copilot_accept = "<C-Enter>",
-		copilot_status = "<space>Cs",
-		copilot_disable = "<space>Cd",
-		copilot_enable = "<space>Ce",
-		copilot_signin = "<space>Ci",
-		copilot_signout = "<space>Co",
-		copilot_panel = "<space>Cp",
-		copilot_save = "<space>Cs",
-		copilot_load = "<space>Cl",
-		copilot_chat_toggle = "<space>c",
-		-- Ask Commands
-		copilot_chat_quick_chat = "<C-a>a",
-		copilot_chat_ask_select_files = "<C-a>s",
-		copilot_chat_stop = "<C-a>S",
-		copilot_chat_reset = "<C-a>r",
-	},
-}
+M.config = {}
 
 local fzflua = require("fzf-lua")
 local kmap = vim.keymap.set
-local kopts = function(x) return { noremap = true, silent = true, desc = x or "" } end
+local kopts = function(x)
+	return { noremap = true, silent = true, desc = x or "" }
+end
 
 local function toggle_copilot(enable)
 	enable = enable or false
@@ -70,10 +54,7 @@ local function fzf_select_files_or_quickchat_copilot(active_buffer)
 	end
 end
 
-M.setup = function(opt)
-	opts = opts or {}
-	M.config.keys = opts.keys or M.config.keys
-
+local function setup_ai_plugins()
 	-- Render markdown
 	require("render-markdown").setup({
 		file_types = { "markdown", "copilot-chat" },
@@ -87,30 +68,40 @@ M.setup = function(opt)
 			row = 1,
 		},
 	})
+end
 
-	-- Keymaps
-	kmap("i", M.config.keys.copilot_accept, 'copilot#Accept("\\<CR>")', { expr = true, replace_keycodes = false })
-	kmap("n", M.config.keys.copilot_status, ":Copilot status<CR>",                                                   kopts('Copilot Status'))
-	kmap("n", M.config.keys.copilot_disable, function() toggle_copilot() end,                                        kopts('Copilot Toggle'))
-	kmap("n", M.config.keys.copilot_enable, function() toggle_copilot(true) end,                                     kopts('Copilot Toggle'))
-	kmap("n", M.config.keys.copilot_signin, ":Copilot signin<CR>",                                                   kopts('Copilot Signin'))
-	kmap("n", M.config.keys.copilot_signout, ":Copilot signout<CR>",                                                 kopts('Copilot Signout'))
-	kmap("n", M.config.keys.copilot_panel, ":Copilot panel<CR>",                                                     kopts('Copilot Panel'))
-	kmap("n", M.config.keys.copilot_save, ":CopilotChatSave<CR>",                                                    kopts('CopilotChat Save'))
-	kmap("n", M.config.keys.copilot_load, ":CopilotChatLoad<CR>",                                                    kopts('CopilotChat Load'))
-	kmap("n", M.config.keys.copilot_chat_toggle, ":CopilotChatToggle<CR>",                                           kopts('CopilotChat Toggle'))
-	kmap({ "n", "v", "x" }, M.config.keys.copilot_chat_quick_chat, function()
-    fzf_select_files_or_quickchat_copilot(true)
-	end,                                                                                                             kopts('CopilotChat Quickchat'))
-	-- Select Files for context and Ask
-	kmap({ "n", "v", "x" }, M.config.keys.copilot_chat_ask_select_files, function()
-		fzf_select_files_or_quickchat_copilot()
-	end,                                                                                                             kopts('CopilotChat Select and Ask'))
-	kmap({ "n", "v", "x" }, M.config.keys.copilot_chat_stop, ":CopilotChatStop<CR>",                                 kopts('CopilotChat Stop'))
-	kmap({ "n", "v", "x" }, M.config.keys.copilot_chat_reset, ":CopilotChatReset<CR>",                               kopts('CopilotChat Reset'))
+local function setup_ai_keymaps()
+  -- Copilot
+	kmap("i", "<C-/>", 'copilot#Accept("\\<CR>")', { expr = true, replace_keycodes = false })
+	kmap("n", "<space>C?", ":Copilot status<CR>", kopts("Copilot Status"))
+	kmap("n", "<space>Cd", function() toggle_copilot() end, kopts("Copilot Toggle"))
+	kmap("n", "<space>Ce", function() toggle_copilot(true) end, kopts("Copilot Toggle"))
+	kmap("n", "<space>Csi", ":Copilot signin<CR>", kopts("Copilot Signin"))
+	kmap("n", "<space>Cso", ":Copilot signout<CR>", kopts("Copilot Signout"))
+	kmap("n", "<space>Cp", ":Copilot panel<CR>", kopts("Copilot Panel"))
+  -- CopilotChat
+	kmap("n", "aS", ":CopilotChatSave<CR>", kopts("CopilotChat Save"))
+	kmap("n", "aL", ":CopilotChatLoad<CR>", kopts("CopilotChat Load"))
+	kmap("n", "at", ":CopilotChatToggle<CR>", kopts("CopilotChat Toggle"))
+	kmap({ "n", "v", "x" }, "<C-a>a", function() fzf_select_files_or_quickchat_copilot(true) end, kopts("CopilotChat Quickchat"))
+	kmap({ "n", "v", "x" }, "<C-a>s", function() fzf_select_files_or_quickchat_copilot() end, kopts("CopilotChat Select and Ask"))
+	kmap({ "n", "v", "x" }, "<C-a>S", ":CopilotChatStop<CR>", kopts("CopilotChat Stop"))
+	kmap({ "n", "v", "x" }, "<C-a>r", ":CopilotChatReset<CR>", kopts("CopilotChat Reset"))
+	kmap("n", "aa", function() fzf_select_files_or_quickchat_copilot(true) end, kopts("CopilotChat Quickchat"))
+	kmap("n", "as", function() fzf_select_files_or_quickchat_copilot() end, kopts("CopilotChat Select and Ask"))
+	kmap("n", "aS", ":CopilotChatStop<CR>", kopts("CopilotChat Stop"))
+	kmap("n", "ar", ":CopilotChatReset<CR>", kopts("CopilotChat Reset"))
 
 	-- Do not accept tab for copilot (must come after keymaps)
 	vim.g.copilot_no_tab_map = true
+end
+
+
+
+M.setup = function(opts)
+	opts = opts or {}
+  setup_ai_plugins()
+  setup_ai_keymaps()
 end
 
 return M

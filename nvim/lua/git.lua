@@ -1,21 +1,37 @@
 local M = {}
 
-M.config = {
-  keys = {
-    diffview_compare_working_tree = "<space>gw",
-    diffview_compare_branches = "<space>gc",
-    diffview_compare_head = "<space>gh",
-    neogit = "<space>gn",
-  }
-}
+M.config = {}
 local fzflua = require("fzf-lua")
 local kmap = vim.keymap.set
 local kopts = function(x) return { noremap = true, silent = true, desc = x or "" } end
+
+local function diff_view_compare_head_num()
+	local num = vim.fn.input("DiffviewOpen HEAD~")
+	if tonumber(num) then
+		vim.cmd("DiffviewOpen HEAD~" .. num)
+	end
+end
+
+local function diff_view_compare_git_branches()
+	fzflua.git_branches({
+		prompt = "DiffviewOpen HEAD~ ",
+		actions = {
+			["default"] = function(selected)
+				local branch1 = selected[1]
+				-- if branch then
+				-- 	vim.cmd("DiffviewOpen HEAD.." .. branch)
+				-- end
+        vim.notify(branch1)
+			end,
+		},
+	})
+end
 
 local function setup_plugin_diffview()
   local actions = require("diffview.actions")
   require("diffview").setup({
     diff_binaries = false,      -- Show diffs for binaries
+    -- enhanced_diff_hl = false,   -- See |diffview-M.config-enhanced_diff_hl|
     enhanced_diff_hl = false,   -- See |diffview-M.config-enhanced_diff_hl|
     git_cmd = { "git" },        -- The git executable followed by default args.
     hg_cmd = { "hg" },          -- The hg executable followed by default args.
@@ -165,44 +181,34 @@ local function setup_plugin_diffview()
   })
 end
 
-local function diff_view_compare_head_num()
-  local num = vim.fn.input("DiffviewOpen HEAD~")
-  if tonumber(num) then
-    vim.cmd("DiffviewOpen HEAD~" .. num)
-  end
+local function setup_plugins_mini_git()
+  -- mini.diff
+  -- require("mini.diff").setup()
 end
 
-local function diff_view_compare_git_branches()
-  fzflua.git_branches({
-    prompt = "DiffviewOpen HEAD~ ",
-    actions = {
-      ["default"] = function(selected)
-        local branch = selected[1]
-        if branch then
-          vim.cmd("DiffviewOpen HEAD.." .. branch)
-        end
-      end,
-    },
-  })
+local function setup_keymaps()
+	kmap("n", "<space>dw", ":DiffviewOpen<CR>", kopts("Diffview: Compare Working Tree"))
+	kmap("n", "<space>db", function() diff_view_compare_git_branches() end, kopts("Diffview: Compare Branches A..B"))
+	kmap("n", "<space>dh", function() diff_view_compare_head_num() end, kopts("Diffview: Compare HEAD~N"))
+
+  -- Unused
+	-- kmap("n", "<space>gn", ":Neogit<CR>", kopts("Neogit"))
+	-- kmap("n", "gb", ":Gitsigns blame<CR>", kopts("Gitsigns: Blame"))
+	-- kmap("n", "gh", ":Gitsigns setloclist target=all<CR>", kopts("Gitsigns: Show all hunks"))
+	-- kmap("n", "gg", ":Gitsigns reset_hunk<CR>", kopts("Gitsigns: Reset hunk"))
+	-- kmap("n", "gj", ":Gitsigns nav_hunk next<CR>", kopts("Gitsigns: Next hunk"))
+	-- kmap("n", "gk", ":Gitsigns nav_hunk prev<CR>", kopts("Gitsigns: Prev hunk"))
+	-- kmap("n", "gl", ":Gitsigns blame_line<CR>", kopts("Gitsigns: Blame line"))
+	-- kmap("n", "g<BS>", ":Gitsigns reset_hunk<CR>", kopts("Gitsigns: Reset hunk"))
 end
+
+
 
 function M.setup(opts)
-  opts = opts or {}
-  M.config.keys = opts.keys or M.config.keys
-  setup_plugin_diffview()
-
-  kmap("n", M.config.keys.diffview_compare_working_tree, ":DiffviewOpen<CR>",                                   kopts('Diffview: Compare Working Tree'))
-  kmap("n", M.config.keys.diffview_compare_branches, function() diff_view_compare_git_branches() end,           kopts('Diffview: Compare Branches A..B'))
-  kmap("n", M.config.keys.diffview_compare_head, function() diff_view_compare_head_num() end,                   kopts('Diffview: Compare HEAD~N'))
-  kmap("n", M.config.keys.neogit, ":Neogit<CR>",                                                                kopts('Neogit'))
-  kmap("n", "gb", ":Gitsigns blame<CR>",                                                                        kopts('Gitsigns: Blame'))
-  kmap("n", "gh", ":Gitsigns setloclist target=all<CR>",                                                        kopts('Gitsigns: Show all hunks'))
-  kmap("n", "gg", ":Gitsigns reset_hunk<CR>",                                                                   kopts('Gitsigns: Reset hunk'))
-  kmap("n", "gj", ":Gitsigns nav_hunk next<CR>",                                                                kopts('Gitsigns: Next hunk'))
-  kmap("n", "gk", ":Gitsigns nav_hunk prev<CR>",                                                                kopts('Gitsigns: Prev hunk'))
-  kmap("n", "gl", ":Gitsigns blame_line<CR>",                                                                   kopts('Gitsigns: Blame line'))
-  kmap("n", "g<BS>", ":Gitsigns reset_hunk<CR>",                                                                kopts('Gitsigns: Reset hunk'))
-
+	opts = opts or {}
+	setup_plugin_diffview()
+  setup_plugins_mini_git()
+  setup_keymaps()
 end
 
 return M
